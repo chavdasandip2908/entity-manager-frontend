@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-console.log(process.env.API_BASE_URL);
+const API_BASE_URL= "https://entitymanager.onrender.com";
 
 
 const api = axios.create({
-  baseURL: process.env.API_BASE_URL,
+  baseURL: API_BASE_URL,
 });
 
 api.interceptors.request.use((config) => {
