@@ -1,4 +1,7 @@
+import { toast } from 'react-toastify';
 import axios from 'axios';
+
+
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -11,6 +14,14 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+
+
+export const handleLogout = (navigate) => {
+  localStorage.removeItem('token');
+  toast.success('Logged out successfully');
+  navigate('/login');
+};
 
 export const MAX_IMAGE_SIZE = 500 * 1024; // 500 KB
 export const MAX_PAYLOAD_SIZE = 1 * 1024 * 1024; // 1 MB
@@ -49,6 +60,8 @@ export const handleImageChange = async (file, setImage, toast) => {
     toast.error('Please select a valid JPG or PNG image.');
   }
 };
+
+
 
 const compressImage = (file) => {
   return new Promise((resolve) => {

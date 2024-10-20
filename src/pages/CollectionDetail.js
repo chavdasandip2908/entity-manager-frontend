@@ -9,6 +9,8 @@ import DeleteCollectionButton from '../components/DeleteCollectionButton';
 import CreateChildCollectionForm from '../components/CreateChildCollectionForm';
 import CreateItemForm from '../components/CreateItemForm';
 import { getCollection, getCollectionItems } from '../api';
+import Loading from '../components/Loading';
+import DefaultCollectionImage from '../images/icons8-folder.svg';
 
 function CollectionDetail() {
   const [collection, setCollection] = useState(null);
@@ -17,7 +19,7 @@ function CollectionDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { collectionId } = useParams();
-  
+
 
   useEffect(() => {
     fetchCollectionDetails();
@@ -42,7 +44,7 @@ function CollectionDetail() {
     try {
       const response = await getCollectionItems(collectionId);
       setItems(response.data.data);
-      
+
     } catch (error) {
       console.error('Error fetching collection items:', error);
       toast.error('Failed to fetch collection items.');
@@ -63,7 +65,7 @@ function CollectionDetail() {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return <Loading />
   }
 
   if (error) {
@@ -76,17 +78,27 @@ function CollectionDetail() {
 
   return (
     <AnimatedPage>
-      <div className="bg-white rounded-lg shadow-soft p-6">
+      <div className="bg-white rounded-lg shadow-lg p-8">
         {isEditing ? (
-          <UpdateCollectionForm collection={collection} onUpdate={handleUpdateSuccess} />
+          <UpdateCollectionForm
+            collection={collection}
+            onUpdate={handleUpdateSuccess}
+          />
         ) : (
           <>
-            <h1 className="text-3xl font-bold text-primary mb-6">{collection.name}</h1>
-            <p className="text-gray-600 mb-4">{collection.description}</p>
-            <div className="flex space-x-4 mb-6">
+            <div className="mb-8">
+              <h1 className="text-4xl font-bold text-primary mb-4">
+                {collection.name}
+              </h1>
+              <p className="text-gray-700 text-lg leading-relaxed">
+                {collection.description}
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-4 mb-8">
               <button
                 onClick={() => setIsEditing(true)}
-                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark"
+                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-sm transition-colors"
               >
                 Edit Collection
               </button>
@@ -94,62 +106,94 @@ function CollectionDetail() {
             </div>
           </>
         )}
-        
-        <h2 className="text-2xl font-semibold mb-4">Child Collections</h2>
-        {collection.childCollections && collection.childCollections.length > 0 ? (
-          <ul className="space-y-2 mb-6">
-            {collection.childCollections.map((childCollection) => (
-              <motion.li
-                key={childCollection._id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Link
-                  to={`/collections/${childCollection._id}`}
-                  className="text-primary hover:underline"
-                >
-                  {childCollection.name}
-                </Link>
-              </motion.li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mb-6">No child collections found.</p>
-        )}
 
-        <h2 className="text-2xl font-semibold my-6">Items</h2>
-        {items.length > 0 ? (
-          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            {items.map((item) => (
+        <div className="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
+          {/* Child Collections */}
+          <div className="w-full">
+            <h2 className="text-3xl font-semibold text-gray-800 mb-4">
+              Child Collections
+            </h2>
+            {collection.childCollections && collection.childCollections.length > 0 ? (
+              <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {collection.childCollections.map((childCollection) => (
+                  <motion.li
+                    key={childCollection._id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-gray-100 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
+                  >
+                    <div className="flex items-center space-x-4">
+                      {/* Collection Image */}
+                      <img
+                        src={childCollection.image || DefaultCollectionImage} // Fallback to default image if no image is available
+                        alt={childCollection.name}
+                        className="w-16 h-16 object-cover rounded-full"
+                      />
+                      <Link
+                        to={`/collections/${childCollection._id}`}
+                        className="text-xl font-semibold text-blue-600 hover:underline"
+                      >
+                        {childCollection.name}
+                      </Link>
+                    </div>
+                  </motion.li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-600 mb-4">No child collections found.</p>
+            )}
+          </div>
+          {/* Items on the Right */}
+          <div className="w-full md:w-1/2">
+            <h2 className="text-3xl font-semibold text-gray-800 mb-4">Items</h2>
+            {/* {items.length > 0 ? ( */}
+            <ul className="space-y-4">
+              {/* {items.map((item) => ( */}
               <motion.li
-                key={item._id}
+                key={"item._id"}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
-                className="bg-gray-50 rounded-md p-4 shadow-sm"
+                className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
               >
-                <h3 className="text-lg font-semibold text-primary">{item.name}</h3>
-                <p className="text-gray-600">{item.description}</p>
-                <p className="text-sm text-gray-500 mt-2">Type: {item.type}</p>
-                {item.image && (
-                  <img src={item.image} alt={item.name} className="mt-2 w-full h-32 object-cover rounded" />
-                )}
+                <h3 className="text-2xl font-semibold text-blue-600 mb-2">
+                  {"item.name"}
+                </h3>
+                <p className="text-gray-700 mb-2">{"item.description"}</p>
+                <p className="text-sm text-gray-500">Type: {"item.type"}</p>
+                {/* {item.image && ( */}
+                <img
+                  src={ DefaultCollectionImage}
+                  alt={"item.name"}
+                  className="mt-4 w-full h-40 object-cover rounded-lg shadow-md"
+                />
+                    {/* )} */}
               </motion.li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mb-6">No items found in this collection.</p>
-        )}
+              {/* ))} */}
+            </ul>
+            {/* // ) : (
+            //   <p className="text-gray-600 mb-4">No items found in this collection.</p>
+            // )} */}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+          </div>
+        </div>
+
+        {/* Forms for Adding Child Collection and Item */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
           <div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Add Child Collection
+            </h3>
             <CreateChildCollectionForm
               parentId={collection._id}
               onCreated={handleChildCollectionCreated}
             />
           </div>
           <div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Add New Item
+            </h3>
             <CreateItemForm
               collectionId={collection._id}
               onCreated={handleItemCreated}
@@ -157,7 +201,10 @@ function CollectionDetail() {
           </div>
         </div>
       </div>
-    </AnimatedPage>
+
+    </AnimatedPage >
+
+
   );
 }
 
