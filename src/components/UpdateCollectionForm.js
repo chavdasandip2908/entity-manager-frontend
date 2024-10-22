@@ -28,7 +28,7 @@ function UpdateCollectionForm({ collection, onUpdate }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-lg flex flex-col mx-auto mt-4 w-[26rem] max-w-screen">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-lg flex flex-col mt-4">
       {/* Name Field */}
       <div className='w-full text-center'>
         <h1 className="text-4xl font-bold text-primary">

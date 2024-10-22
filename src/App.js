@@ -18,7 +18,7 @@ const Home = lazy(() => import('./pages/Home'));
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen h-fit bg-gray-100">
         <Header />
         <main className=" mx-auto px-4 py-8">
           <Suspense fallback={<Loading />}>

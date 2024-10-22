@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import AnimatedPage from '../components/AnimatedPage';
-import Button from '../components/Button';
 import { getCollections } from '../api';
+import { Link } from 'react-router-dom';
+import DefaultCollectionImage from '../images/icons8-folder.svg';
+import Loading from '../components/Loading';
 
 function Collections() {
   const [collections, setCollections] = useState([]);
@@ -26,40 +28,58 @@ function Collections() {
     }
   };
 
+  if (loading) {
+    return <Loading />
+  }
+
   return (
     <AnimatedPage>
-      <div className="bg-white rounded-lg shadow-soft p-6">
+      <div className="bg-white rounded-lg shadow-soft p-6 w-full">
         <h1 className="text-3xl font-bold text-primary mb-6">Collections</h1>
-        <Button onClick={fetchCollections} loading={loading}>
-          Refresh Collections
-        </Button>
-        <motion.ul className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        {/* Responsive grid layout for collections */}
+        <motion.div
+          className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-7"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           {collections.map((collection) => (
-            <motion.li
+            <motion.div
               key={collection._id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="bg-gray-50 rounded-md p-4 shadow-sm hover:shadow-md transition-shadow duration-300"
+              className="bg-gray-100 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col items-center"
+              title={collection.description}
             >
-              <h2 className="text-xl font-semibold text-primary">{collection.name}</h2>
-              <p className="text-gray-600 mt-2">{collection.description}</p>
-              {collection.image && (
+              <Link to={`/collections/${collection._id}`} className="block text-center w-full">
+                {/* Collection Image */}
                 <img
-                  src={collection.image}
+                  src={collection.image || DefaultCollectionImage}
                   alt={collection.name}
-                  className="mt-4 w-full h-40 object-cover rounded-md"
+                  className="w-full max-h-auto h-1/1 object-cover rounded-lg mb-4"
                 />
-              )}
-              <p className="text-sm text-gray-500 mt-2">
-                Parent ID: {collection.parentId || 'None'}
-              </p>
-            </motion.li>
+
+                {/* Collection Name */}
+                <h2 className="text-xl font-semibold text-primary">{collection.name}</h2>
+
+                {/* Collection Description */}
+                {/* <p className="text-gray-600 ">{collection.description}</p> */}
+
+                {/* Parent ID */}
+                <p className="text-sm text-gray-500 ">
+                  Parent ID: {collection.parentId || 'None'}
+                </p>
+              </Link>
+            </motion.div>
           ))}
-        </motion.ul>
+        </motion.div>
       </div>
     </AnimatedPage>
+
   );
 }
 
