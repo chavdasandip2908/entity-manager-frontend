@@ -188,31 +188,31 @@ function CollectionDetail() {
           <h2 className="text-3xl font-semibold text-gray-800 mb-4">Child Collections</h2>
           {collection.childCollections && collection.childCollections.length > 0 ? (
             <ul className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-
-
               {collection.childCollections.map((childCollection) => (
-                <motion.li
-                  key={childCollection._id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-gray-100 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
-                >
-                  <div className="flex flex-col items-center">
-                    {/* Child Collection Image */}
-                    <img
-                      src={childCollection.image || DefaultCollectionImage}
-                      alt={childCollection.name}
-                      className="w-24 h-24 object-cover rounded-lg"
-                    />
-                    <Link
-                      to={`/collections/${childCollection._id}`}
-                      className="text-xl font-semibold text-blue-600 hover:underline mt-4"
-                    >
-                      {childCollection.name}
-                    </Link>
-                  </div>
-                </motion.li>
+                childCollection ? ( // Check if childCollection is not null
+                  <motion.li
+                    key={childCollection._id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-gray-100 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
+                  >
+                    <div className="flex flex-col items-center">
+                      {console.log("childCollection : ", childCollection)}
+                      <img
+                        src={childCollection.image || DefaultCollectionImage}
+                        alt={childCollection.name}
+                        className="w-24 h-24 object-cover rounded-lg"
+                      />
+                      <Link
+                        to={`/collections/${childCollection._id}`}
+                        className="text-xl font-semibold text-blue-600 hover:underline mt-4"
+                      >
+                        {childCollection.name}
+                      </Link>
+                    </div>
+                  </motion.li>
+                ) : null // Render nothing if childCollection is null
               ))}
             </ul>
           ) : (
@@ -248,6 +248,8 @@ function CollectionDetail() {
                   <h3 className="text-xl font-semibold text-blue-600 mb-2">{item.name}</h3>
                   <p className="text-gray-700 mb-2 break-words">{item.description}</p>
                   <p className="text-sm text-gray-500">Type: {item.type}</p>
+                  {console.log("item.image : ", item.image)
+                  }
                   {item.image && (
                     <img
                       src={item.image}
